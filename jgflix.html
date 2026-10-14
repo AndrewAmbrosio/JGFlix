@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#17111f">
+  <title>JGFlix — Acesso Especial</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: light-dark(#f7f4fb, #100d16);
+      --surface: light-dark(#ffffff, #1a1423);
+      --surface-2: light-dark(#f0e9fa, #241a31);
+      --text: light-dark(#24172f, #f8f3ff);
+      --muted: light-dark(#6e607b, #b9abc9);
+      --line: light-dark(#e5d9f0, #3a2a49);
+      --purple: #9b5de5;
+      --purple-bright: #b78aff;
+      --pink: #f284c6;
+      --shadow: 0 22px 70px rgba(10, 5, 20, .22);
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button { font: inherit; }
+    .app-root { min-height: 100vh; width: 100%; background: var(--bg); color: var(--text); overflow: hidden; position: relative; }
+    .ambient { position: absolute; inset: 0 0 auto; height: 600px; pointer-events: none; overflow: hidden; opacity: .9; }
+    .ambient::before, .ambient::after { content: ""; position: absolute; border-radius: 50%; filter: blur(70px); }
+    .ambient::before { width: 360px; height: 360px; background: rgba(155, 93, 229, .22); top: -150px; left: -110px; }
+    .ambient::after { width: 300px; height: 300px; background: rgba(242, 132, 198, .13); top: 100px; right: -130px; }
+    .shell { width: min(100% - 32px, 900px); margin: 0 auto; position: relative; z-index: 1; padding: 26px 0 50px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 26px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 900; letter-spacing: -.06em; font-size: 1.55rem; }
+    .brand-mark { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 11px; background: linear-gradient(135deg, var(--purple), #6d28d9); color: white; box-shadow: 0 6px 20px rgba(155,93,229,.32); font-size: 1.15rem; }
+    .brand span:last-child { color: var(--purple-bright); }
+    .status { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 8px 12px; color: var(--muted); font-size: .75rem; font-weight: 750; letter-spacing: .08em; }
+    .hero { border: 1px solid var(--line); background: var(--surface); border-radius: 28px; overflow: hidden; box-shadow: var(--shadow); }
+    .hero-art { min-height: 220px; position: relative; overflow: hidden; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 100%, rgba(155,93,229,.62), transparent 55%), linear-gradient(135deg, #21132f 0%, #17101f 55%, #301b3d 100%); }
+    .hero-art::before { content: ""; position: absolute; width: 280px; height: 280px; border: 1px solid rgba(255,255,255,.13); border-radius: 50%; box-shadow: 0 0 0 35px rgba(255,255,255,.025), 0 0 0 70px rgba(255,255,255,.02); }
+    .hero-art::after { content: "✦   ·   ✧      ·      ✦"; white-space: pre; position: absolute; top: 25px; left: 0; width: 100%; text-align: center; color: #e5ceff; opacity: .7; letter-spacing: 1.2rem; font-size: .8rem; }
+    .screen-icon { position: relative; z-index: 1; font-size: clamp(4.3rem, 13vw, 7rem); filter: drop-shadow(0 8px 24px rgba(183,138,255,.45)); animation: float 4s ease-in-out infinite; }
+    .art-caption { position: absolute; bottom: 20px; right: 22px; color: rgba(255,255,255,.64); font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; }
+    .hero-content { padding: clamp(24px, 5vw, 42px); }
+    .eyebrow { color: var(--purple-bright); text-transform: uppercase; letter-spacing: .16em; font-weight: 800; font-size: .72rem; margin: 0 0 12px; }
+    h1, h2, p { margin-top: 0; }
+    h1 { font-size: clamp(2rem, 7vw, 3.6rem); letter-spacing: -.06em; line-height: 1.04; margin-bottom: 14px; }
+    h2 { letter-spacing: -.035em; line-height: 1.12; }
+    .lead { color: var(--muted); font-size: 1.04rem; line-height: 1.7; max-width: 600px; margin-bottom: 24px; }
+    .notice { border: 1px solid var(--line); background: var(--surface-2); border-radius: 16px; padding: 16px; display: flex; align-items: flex-start; gap: 12px; margin: 24px 0; }
+    .notice-icon { font-size: 1.35rem; line-height: 1.2; }
+    .notice p { margin: 0; line-height: 1.55; }
+    .notice strong { display: block; margin-bottom: 4px; }
+    .fineprint { color: var(--muted); font-size: .78rem; margin: 10px 0 0; }
+    .primary, .secondary { cursor: pointer; border: 0; border-radius: 14px; padding: 15px 20px; font-weight: 850; transition: transform .18s ease, box-shadow .18s ease, filter .18s ease; width: 100%; }
+    .primary { color: #fff; background: linear-gradient(100deg, #8b43d6, #a855f7 60%, #d16bb9); box-shadow: 0 9px 24px rgba(139,67,214,.27); }
+    .primary:hover { transform: translateY(-2px); box-shadow: 0 13px 28px rgba(139,67,214,.35); filter: brightness(1.06); }
+    .primary:active, .secondary:active { transform: scale(.99); }
+    .secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--line); }
+    button:focus-visible { outline: 3px solid var(--pink); outline-offset: 3px; }
+    .screen { display: none; animation: reveal .55s ease both; }
+    .screen.active { display: block; }
+    .section-head { margin: 30px 0 18px; }
+    .section-head h2 { font-size: clamp(1.65rem, 5vw, 2.25rem); margin-bottom: 9px; }
+    .section-head p { color: var(--muted); margin-bottom: 0; line-height: 1.6; }
+    .plan-card { border: 1px solid var(--line); background: var(--surface); border-radius: 24px; padding: clamp(22px, 5vw, 34px); box-shadow: var(--shadow); }
+    .plan-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 22px; }
+    .plan-top h2 { font-size: 1.65rem; margin: 0 0 7px; }
+    .plan-top p { color: var(--muted); margin: 0; }
+    .vip { background: var(--surface-2); border: 1px solid var(--line); color: var(--purple-bright); border-radius: 13px; padding: 10px 12px; font-weight: 900; white-space: nowrap; }
+    .price { display: flex; align-items: baseline; gap: 8px; margin: 20px 0 8px; }
+    .price strong { font-size: 2.6rem; letter-spacing: -.07em; }
+    .price span { color: var(--muted); }
+    .duration { color: var(--muted); font-size: .88rem; margin-bottom: 24px; }
+    .benefits { display: grid; gap: 12px; padding: 0; list-style: none; margin: 24px 0 28px; }
+    .benefits li { display: flex; gap: 10px; line-height: 1.5; }
+    .check { color: #a46cf0; font-weight: 900; }
+    .activation-note { text-align: center; color: var(--muted); font-size: .8rem; margin: 12px 0 0; }
+    .reveal-card { border: 1px solid rgba(183,138,255,.35); background: radial-gradient(ellipse at 50% 0%, rgba(155,93,229,.18), transparent 65%), var(--surface); border-radius: 24px; padding: clamp(26px, 6vw, 48px); text-align: center; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+    .reveal-card::before { content: "✦"; position: absolute; top: 18px; left: 22px; color: var(--purple-bright); opacity: .65; }
+    .reveal-card::after { content: "✧"; position: absolute; bottom: 22px; right: 25px; color: var(--pink); opacity: .75; font-size: 1.7rem; }
+    .success-icon { display: grid; place-items: center; margin: 0 auto 20px; width: 72px; height: 72px; border-radius: 24px; background: var(--surface-2); font-size: 2rem; animation: pop .6s cubic-bezier(.2,.8,.2,1.2) both; }
+    .reveal-card h2 { font-size: clamp(1.8rem, 6vw, 2.7rem); margin-bottom: 16px; }
+    .final-message { max-width: 540px; margin: 0 auto 20px; font-size: clamp(1.12rem, 3.8vw, 1.35rem); line-height: 1.65; }
+    .submessage { color: var(--muted); font-size: .9rem; line-height: 1.6; }
+    .footer { text-align: center; color: var(--muted); font-size: .75rem; padding: 22px 8px 0; }
+    .footer strong { color: var(--purple-bright); }
+    .confetti { position: fixed; z-index: 10; top: -20px; width: 8px; height: 12px; border-radius: 2px; pointer-events: none; animation: fall 2.4s ease-in forwards; }
+    .toast { position: fixed; z-index: 20; bottom: 20px; left: 50%; transform: translate(-50%, 20px); opacity: 0; background: var(--text); color: var(--bg); border-radius: 999px; padding: 11px 16px; font-size: .85rem; transition: all .25s ease; pointer-events: none; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    @keyframes float { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-10px) rotate(3deg); } }
+    @keyframes reveal { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pop { from { opacity: 0; transform: scale(.65) rotate(-12deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+    @keyframes fall { to { transform: translateY(110vh) rotate(600deg); opacity: .1; } }
+    @media (min-width: 650px) { .shell { padding-top: 34px; } .hero-art { min-height: 285px; } .primary, .secondary { width: auto; min-width: 245px; } .button-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <main class="app-root">
+    <div class="ambient" aria-hidden="true"></div>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand" aria-label="JGFlix"><span class="brand-mark">▶</span><span>JG<span>Flix</span></span></div>
+        <div class="status">ACESSO ESPECIAL</div>
+      </header>
+
+      <section id="screen-start" class="screen active" aria-labelledby="welcome-title">
+        <article class="hero">
+          <div class="hero-art" aria-hidden="true">
+            <div class="screen-icon">🍿</div>
+            <div class="art-caption">streaming duvidoso since hoje</div>
+          </div>
+          <div class="hero-content">
+            <p class="eyebrow">Uma comunicação muito oficial</p>
+            <h1 id="welcome-title">O teu entretenimento começa aqui. Ou talvez não...</h1>
+            <p class="lead">Filmes, séries e decisões administrativas de qualidade questionável. Tudo num só lugar. O que poderia correr mal? 😂</p>
+            <div class="notice">
+              <div class="notice-icon">⚠️</div>
+              <p><strong>Comunicado da administração</strong>Período de teste não temos… mas confesso que há clientes que merecem um plano especial.</p>
+            </div>
+            <p class="fineprint">*A administração reserva-se o direito de mudar de ideias sem aviso prévio.</p>
+            <div class="button-row" style="margin-top:22px">
+              <button class="primary" id="decision-button">Consultar nova decisão <span aria-hidden="true">👀</span></button>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section id="screen-plan" class="screen" aria-labelledby="plan-title">
+        <div class="section-head">
+          <p class="eyebrow">Actualização extraordinária</p>
+          <h2>Espera… parece que houve uma excepção. 🤨</h2>
+          <p>Após uma reunião de emergência que durou aproximadamente 4 segundos, a administração decidiu rever a tua situação.</p>
+        </div>
+        <article class="plan-card">
+          <div class="plan-top">
+            <div>
+              <p class="eyebrow">Proposta exclusiva</p>
+              <h2 id="plan-title">Plano JGFlix Especial</h2>
+              <p>Para utilizadores devidamente seleccionados.</p>
+            </div>
+            <div class="vip">✦ VIP</div>
+          </div>
+          <div class="price"><strong>0 Kz</strong><span>/ mês</span></div>
+          <p class="duration">Duração: até a administração mudar de ideias. 😂</p>
+          <hr style="border:0;border-top:1px solid var(--line)">
+          <p style="font-weight:800;margin:22px 0 0">Benefícios incluídos:</p>
+          <ul class="benefits">
+            <li><span class="check">✓</span><span>Conteúdo duvidoso, mas totalmente gratuito.</span></li>
+            <li><span class="check">✓</span><span>Acesso ilimitado a piadas de qualidade questionável.</span></li>
+            <li><span class="check">✓</span><span>Tratamento especial, sujeito a investigação. 👀</span></li>
+            <li><span class="check">✓</span><span>1 sorriso a cada dia</span></li>
+            <li><span class="check">✓</span><span>3 piadas duvidosas</span></li>
+            <li><span class="check">✓</span><span>Acesso ilimitado a conteúdos que não existem. 💜</span></li>
+            <li><span class="check">✓</span><span>Uma dose de boa disposição por visita. 💜</span></li>
+           
+            
+          </ul>
+          <div class="button-row">
+            <button class="primary" id="activate-button">Activar o meu plano ✨</button>
+            <button class="secondary" id="back-button">Voltar à burla 😂</button>
+          </div>
+          <p class="activation-note">Ao activar, concordas que a administração tem demasiado tempo livre.</p>
+        </article>
+      </section>
+
+      <section id="screen-final" class="screen" aria-labelledby="final-title">
+        <div class="section-head" style="text-align:center">
+          <p class="eyebrow">Processo concluído</p>
+          <h2 id="final-title">A decisão foi tomada.</h2>
+        </div>
+        <article class="reveal-card">
+          <div class="success-icon" aria-hidden="true">🎉</div>
+          <p class="eyebrow">Notificação da administração</p>
+          <h2>Plano activado!</h2>
+          <p class="final-message">Parabéns! Foste seleccionada para um plano especial. Não sabemos se foi pelo teu perfil ou por favoritismo da administração. 😌😂</p>
+          <p class="submessage">A administração não fará mais comentários sobre este assunto.<br>Obrigado pela preferência. Ou pela curiosidade.</p>
+          <div class="button-row" style="justify-content:center;margin-top:26px">
+            <button class="primary" id="again-button">Ver a plataforma outra vez ↻</button>
+          </div>
+        </article>
+      </section>
+      <footer class="footer">© JGFlix · <strong>0 Kz</strong> · 100% suspeito 🍿</footer>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite">Decisão administrativa em curso…</div>
+  </main>
+  <script>
+    const screens = [...document.querySelectorAll('.screen')];
+    const toast = document.getElementById('toast');
+    let toastTimer;
+
+    function showScreen(id) {
+      screens.forEach(screen => {
+        const active = screen.id === id;
+        screen.classList.toggle('active', active);
+        screen.setAttribute('aria-hidden', String(!active));
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1900);
+    }
+
+    function celebrate() {
+      const colors = ['#b78aff', '#f284c6', '#f7d794', '#8be9c5', '#ffffff'];
+      for (let i = 0; i < 48; i++) {
+        const piece = document.createElement('span');
+        piece.className = 'confetti';
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDelay = Math.random() * .65 + 's';
+        piece.style.animationDuration = (1.7 + Math.random() * 1.5) + 's';
+        piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 4000);
+      }
+    }
+
+    document.getElementById('decision-button').addEventListener('click', () => {
+      showToast('A consultar a administração… 🤨');
+      setTimeout(() => showScreen('screen-plan'), 650);
+    });
+
+    document.getElementById('activate-button').addEventListener('click', () => {
+      showScreen('screen-final');
+      celebrate();
+    });
+
+    document.getElementById('back-button').addEventListener('click', () => {
+      showScreen('screen-start');
+      showToast('A burla continua operacional. 😂');
+    });
+
+    document.getElementById('again-button').addEventListener('click', () => {
+      showScreen('screen-start');
+      showToast('A administração finge que nada aconteceu. 🤝');
+    });
+  </script>
+</body>
+</html>
